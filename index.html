@@ -1,165 +1,409 @@
 <!DOCTYPE html>
+
 <html lang="ru" data-theme="light">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Намаз — Баку</title>
-<link rel="stylesheet" href="base.css"/>
-<script src="app.js"></script>
+<title>Islamic App — Баку</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Scheherazade+New:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-/* ── Header ── */
-.header {
-  padding: 24px 24px 20px;
-  text-align: center;
-  animation: riseUp 0.9s cubic-bezier(0.16,1,0.3,1) both;
+/* ══════════════════════════════════════
+   TOKENS
+══════════════════════════════════════ */
+:root { --tr: 0.25s ease; }
+
+[data-theme=“light”] {
+–bg:      #f5f0e8;
+–bg2:     #ede8df;
+–card:    #ffffff;
+–card2:   #f7f3ec;
+–border:  rgba(0,0,0,0.08);
+–borderg: rgba(180,130,50,0.35);
+–text:    #1a1510;
+–text2:   #5a5248;
+–muted:   #9a9088;
+–gold:    #b07a28;
+–gold2:   #c8921e;
+–gold3:   #9a6a18;
+–navbg:   rgba(245,240,232,0.94);
+–navline: rgba(0,0,0,0.07);
+–shadow:  0 2px 20px rgba(0,0,0,0.07);
 }
-.crescent {
-  font-size: 1.6rem; display: block; margin-bottom: 8px;
-  animation: glow 3s ease-in-out infinite alternate;
-}
-.arabic-title {
-  font-family: 'Scheherazade New', serif;
-  font-size: 2.6rem; color: var(--text); line-height: 1; margin-bottom: 8px;
-}
-.city-label {
-  font-size: 0.68rem; letter-spacing: 0.4em;
-  text-transform: uppercase; color: var(--muted); font-weight: 300;
+[data-theme=“dark”] {
+–bg:      #0d1017;
+–bg2:     #111520;
+–card:    #161b25;
+–card2:   #1c2230;
+–border:  rgba(255,255,255,0.07);
+–borderg: rgba(212,168,74,0.35);
+–text:    #ffffff;
+–text2:   #c8bfaa;
+–muted:   #6e6860;
+–gold:    #d4a84a;
+–gold2:   #ecc870;
+–gold3:   #f5e4a8;
+–navbg:   rgba(13,16,23,0.95);
+–navline: rgba(255,255,255,0.06);
+–shadow:  0 2px 20px rgba(0,0,0,0.4);
 }
 
-/* ── Clock card ── */
-.clock-card {
-  display: flex; justify-content: space-between; align-items: center;
+/* ══════════════════════════════════════
+RESET & BASE
+══════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+background:var(–bg);color:var(–text);
+font-family:‘Inter’,sans-serif;font-weight:400;
+min-height:100vh;overflow-x:hidden;
+transition:background var(–tr),color var(–tr);
 }
-.date-greg { font-size: 0.92rem; color: var(--text); font-weight: 500; }
-.date-hijri {
-  font-size: 0.74rem; color: var(--muted);
-  font-family: 'Cormorant Garamond', serif; font-style: italic; margin-top: 3px;
-}
-.live-clock {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 2.2rem; font-weight: 400; color: var(--gold2);
-  letter-spacing: 0.02em; line-height: 1; white-space: nowrap;
-}
-.live-clock .secs { font-size: 1.1rem; color: var(--gold); opacity: 0.8; }
-
-/* ── Progress ── */
-.progress-wrap { margin: 0 16px 12px; }
-.progress-label {
-  display: flex; justify-content: space-between;
-  font-size: 0.62rem; letter-spacing: 0.16em;
-  text-transform: uppercase; color: var(--muted); margin-bottom: 7px;
-}
-.progress-track {
-  height: 3px; background: var(--border);
-  border-radius: 999px; overflow: hidden;
-}
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--gold), var(--gold2));
-  border-radius: 999px; transition: width 1s ease;
-  box-shadow: 0 0 8px rgba(212,168,74,0.4);
+body::after{
+content:’’;position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.03;
+background-image:url(“data:image/svg+xml,%3Csvg width=‘80’ height=‘80’ viewBox=‘0 0 80 80’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cg fill=‘none’%3E%3Cpolygon points=‘40,2 78,22 78,58 40,78 2,58 2,22’ stroke=’%23888’ stroke-width=‘0.8’/%3E%3Cpolygon points=‘40,18 62,30 62,50 40,62 18,50 18,30’ stroke=’%23888’ stroke-width=‘0.4’/%3E%3C/g%3E%3C/svg%3E”);
 }
 
-/* ── Next prayer ── */
-.next-card {
-  display: flex; justify-content: space-between; align-items: center;
-  position: relative; overflow: hidden;
+/* ══════════════════════════════════════
+NAVBAR
+══════════════════════════════════════ */
+.navbar{
+position:fixed;top:0;left:0;right:0;z-index:100;
+background:var(–navbg);border-bottom:1px solid var(–navline);
+backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+display:flex;align-items:center;justify-content:space-between;
+padding:0 12px;height:54px;
+transition:background var(–tr),border-color var(–tr);
 }
-.next-card::before {
-  content: ''; position: absolute; top: -40px; right: -40px;
-  width: 120px; height: 120px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(212,168,74,0.12) 0%, transparent 70%);
+.nav-tabs{display:flex;gap:2px;flex:1;justify-content:center;}
+.nav-tab{
+display:flex;flex-direction:column;align-items:center;gap:1px;
+padding:5px 10px;border-radius:10px;text-decoration:none;
+color:var(–muted);font-size:0.55rem;font-weight:500;
+letter-spacing:0.04em;text-transform:uppercase;
+transition:all var(–tr);min-width:50px;
 }
-.next-tag { font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
-.next-name { font-size: 1.6rem; font-weight: 600; color: var(--text); line-height: 1; }
-.countdown { font-family: 'Cormorant Garamond', serif; font-size: 2.1rem; font-weight: 400; color: var(--gold2); letter-spacing: 0.02em; text-align: right; line-height: 1; }
-.countdown-sub { font-size: 0.58rem; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; text-align: right; margin-top: 4px; }
+.nav-tab .ni{font-size:1.1rem;line-height:1;}
+.nav-tab:hover{color:var(–text2);}
+.nav-tab.active{color:var(–gold2);background:rgba(212,168,74,0.1);}
+.theme-btn{
+background:none;border:1px solid var(–border);border-radius:10px;
+width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+cursor:pointer;font-size:0.95rem;color:var(–text2);
+transition:all var(–tr);flex-shrink:0;
+}
+.theme-btn:hover{border-color:var(–borderg);color:var(–gold2);}
 
-/* ── Sun strip ── */
-.sun-strip {
-  display: flex; justify-content: space-around; align-items: center;
+/* ══════════════════════════════════════
+PAGES
+══════════════════════════════════════ */
+.page-wrap{
+max-width:440px;width:100%;margin:0 auto;
+padding:66px 0 40px;position:relative;z-index:1;
 }
-.sun-item { text-align: center; }
-.sun-icon  { font-size: 1.3rem; display: block; margin-bottom: 5px; }
-.sun-label { font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
-.sun-time  { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--text); }
-.sun-div   { width: 1px; height: 40px; background: var(--border); }
+.page{display:none;}
+.page.active{display:block;}
 
-/* ── Prayer cards ── */
-.prayers-section { margin: 0 16px; display: flex; flex-direction: column; gap: 8px; }
-.prayer-card {
-  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
-  padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
-  transition: all 0.3s cubic-bezier(0.16,1,0.3,1); cursor: default;
-  position: relative; overflow: hidden;
+/* ══════════════════════════════════════
+SHARED COMPONENTS
+══════════════════════════════════════ */
+.card{
+background:var(–card);border:1px solid var(–border);
+border-radius:18px;padding:18px 22px;margin:0 16px 12px;
+transition:background var(–tr),border-color var(–tr);
 }
-.prayer-card::after {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-  background: transparent; transition: background 0.3s;
+.card-gold{
+background:linear-gradient(135deg,rgba(212,168,74,0.12),rgba(212,168,74,0.04));
+border:1px solid var(–borderg);
 }
-.prayer-card:hover { border-color: var(--border-gold); background: var(--card2); transform: translateX(5px); }
-.prayer-card:hover::after { background: var(--border-gold); }
-.prayer-card.active {
-  background: linear-gradient(135deg, rgba(212,168,74,0.1), rgba(212,168,74,0.03));
-  border-color: var(--border-gold);
-  box-shadow: 0 4px 24px rgba(212,168,74,0.08);
+.lbl{font-size:0.6rem;letter-spacing:0.28em;text-transform:uppercase;color:var(–muted);}
+.btn{
+display:inline-flex;align-items:center;justify-content:center;gap:6px;
+padding:10px 18px;border-radius:12px;font-family:‘Inter’,sans-serif;
+font-size:0.82rem;font-weight:500;cursor:pointer;transition:all var(–tr);border:none;
 }
-.prayer-card.active::after { background: var(--gold2); }
-.prayer-card.passed { opacity: 0.38; }
+.btn-gold{background:var(–gold2);color:#1a1000;}
+.btn-gold:hover{filter:brightness(1.08);}
+.btn-ghost{background:transparent;border:1px solid var(–border);color:var(–text2);}
+.btn-ghost:hover{border-color:var(–borderg);color:var(–gold2);}
+.spinner{
+width:34px;height:34px;border:1.5px solid var(–border);
+border-top-color:var(–gold2);border-radius:50%;
+animation:spin 0.9s linear infinite;margin:0 auto 12px;
+}
+.loading-wrap{text-align:center;padding:50px 24px;color:var(–muted);}
+input[type=number],input[type=text]{
+width:100%;padding:10px 14px;
+background:var(–bg2);border:1px solid var(–border);border-radius:10px;
+color:var(–text);font-size:0.95rem;font-family:‘Inter’,sans-serif;
+outline:none;transition:border-color var(–tr);
+-moz-appearance:textfield;
+}
+input:focus{border-color:var(–borderg);}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;}
 
-.p-left { display: flex; align-items: center; gap: 14px; }
-.p-dot {
-  width: 40px; height: 40px; border-radius: 12px;
-  background: var(--bg2); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem; transition: all 0.3s;
-}
-.prayer-card.active .p-dot {
-  background: rgba(212,168,74,0.15); border-color: var(--border-gold);
-}
-.p-name-ru { font-size: 0.95rem; font-weight: 500; color: var(--text); }
-.p-name-ar { font-family: 'Scheherazade New', serif; font-size: 0.95rem; color: var(--muted); margin-top: 1px; }
-.p-time {
-  font-family: 'Cormorant Garamond', serif; font-size: 1.5rem;
-  font-weight: 400; color: var(--text2); letter-spacing: 0.01em;
-}
-.prayer-card.active .p-time { color: var(--gold2); font-weight: 600; }
+/* ══════════════════════════════════════
+PAGE HEADERS
+══════════════════════════════════════ */
+.ph{text-align:center;padding:20px 24px 14px;}
+.ph-icon{font-size:1.8rem;display:block;margin-bottom:6px;}
+.ph-title{font-family:‘Scheherazade New’,serif;font-size:1.9rem;color:var(–text);margin-bottom:3px;}
+.ph-sub{font-size:0.68rem;letter-spacing:0.32em;text-transform:uppercase;color:var(–muted);font-weight:300;}
 
-.footer {
-  text-align: center; margin-top: 32px;
-  font-size: 0.6rem; color: var(--muted);
-  letter-spacing: 0.14em; text-transform: uppercase;
+/* ══════════════════════════════════════
+NAMAZ PAGE
+══════════════════════════════════════ */
+.nz-header{text-align:center;padding:20px 24px 16px;animation:riseUp 0.8s cubic-bezier(0.16,1,0.3,1) both;}
+.crescent{font-size:1.5rem;display:block;margin-bottom:6px;animation:glow 3s ease-in-out infinite alternate;}
+.ar-title{font-family:‘Scheherazade New’,serif;font-size:2.5rem;color:var(–text);line-height:1;margin-bottom:7px;}
+.city-lbl{font-size:0.67rem;letter-spacing:0.4em;text-transform:uppercase;color:var(–muted);font-weight:300;}
+
+.clock-card{display:flex;justify-content:space-between;align-items:center;}
+.date-greg{font-size:0.9rem;color:var(–text);font-weight:500;}
+.date-hijri{font-size:0.72rem;color:var(–muted);font-family:‘Cormorant Garamond’,serif;font-style:italic;margin-top:2px;}
+.live-clock{font-family:‘Cormorant Garamond’,serif;font-size:2.1rem;font-weight:400;color:var(–gold2);letter-spacing:0.02em;line-height:1;white-space:nowrap;}
+.live-clock .secs{font-size:1.05rem;color:var(–gold);opacity:0.8;}
+
+.prog-wrap{margin:0 16px 12px;}
+.prog-lbl{display:flex;justify-content:space-between;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(–muted);margin-bottom:6px;}
+.prog-track{height:3px;background:var(–border);border-radius:999px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(–gold),var(–gold2));border-radius:999px;transition:width 1s ease;box-shadow:0 0 8px rgba(212,168,74,0.4);}
+
+.next-card{display:flex;justify-content:space-between;align-items:center;position:relative;overflow:hidden;}
+.next-card::before{content:’’;position:absolute;top:-40px;right:-40px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,74,0.1) 0%,transparent 70%);}
+.next-tag{font-size:0.58rem;letter-spacing:0.28em;text-transform:uppercase;color:var(–muted);margin-bottom:5px;}
+.next-name{font-size:1.5rem;font-weight:600;color:var(–text);line-height:1;}
+.countdown{font-family:‘Cormorant Garamond’,serif;font-size:2rem;font-weight:400;color:var(–gold2);letter-spacing:0.02em;text-align:right;line-height:1;}
+.countdown-sub{font-size:0.56rem;color:var(–muted);letter-spacing:0.2em;text-transform:uppercase;text-align:right;margin-top:3px;}
+
+.sun-strip{display:flex;justify-content:space-around;align-items:center;}
+.sun-item{text-align:center;}
+.sun-icon{font-size:1.2rem;display:block;margin-bottom:4px;}
+.sun-lbl{font-size:0.56rem;letter-spacing:0.17em;text-transform:uppercase;color:var(–muted);margin-bottom:2px;}
+.sun-time{font-family:‘Cormorant Garamond’,serif;font-size:1.15rem;color:var(–text);}
+.sun-div{width:1px;height:38px;background:var(–border);}
+
+.prayers-list{margin:0 16px;display:flex;flex-direction:column;gap:8px;}
+.pc{
+background:var(–card);border:1px solid var(–border);border-radius:16px;
+padding:14px 18px;display:flex;justify-content:space-between;align-items:center;
+transition:all 0.3s cubic-bezier(0.16,1,0.3,1);cursor:default;
+position:relative;overflow:hidden;
 }
+.pc::after{content:’’;position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:background 0.3s;}
+.pc:hover{border-color:var(–borderg);background:var(–card2);transform:translateX(4px);}
+.pc:hover::after{background:var(–borderg);}
+.pc.active{background:linear-gradient(135deg,rgba(212,168,74,0.1),rgba(212,168,74,0.03));border-color:var(–borderg);box-shadow:0 4px 24px rgba(212,168,74,0.08);}
+.pc.active::after{background:var(–gold2);}
+.pc.passed{opacity:0.38;}
+.pc-left{display:flex;align-items:center;gap:13px;}
+.pc-dot{width:38px;height:38px;border-radius:12px;background:var(–bg2);border:1px solid var(–border);display:flex;align-items:center;justify-content:center;font-size:1.05rem;transition:all 0.3s;}
+.pc.active .pc-dot{background:rgba(212,168,74,0.15);border-color:var(–borderg);}
+.pc-ru{font-size:0.92rem;font-weight:500;color:var(–text);}
+.pc-ar{font-family:‘Scheherazade New’,serif;font-size:0.9rem;color:var(–muted);margin-top:1px;}
+.pc-time{font-family:‘Cormorant Garamond’,serif;font-size:1.45rem;font-weight:400;color:var(–text2);letter-spacing:0.01em;}
+.pc.active .pc-time{color:var(–gold2);font-weight:600;}
+
+.nz-footer{text-align:center;margin-top:28px;font-size:0.58rem;color:var(–muted);letter-spacing:0.14em;text-transform:uppercase;}
+
+/* ══════════════════════════════════════
+TASBIH PAGE
+══════════════════════════════════════ */
+.dhikr-list{margin:0 16px 12px;display:flex;flex-direction:column;gap:7px;}
+.dhikr-opt{
+background:var(–card);border:1.5px solid var(–border);border-radius:14px;
+padding:13px 17px;display:flex;justify-content:space-between;align-items:center;
+cursor:pointer;transition:all var(–tr);
+}
+.dhikr-opt:hover{border-color:var(–borderg);}
+.dhikr-opt.sel{border-color:var(–gold2);background:rgba(212,168,74,0.08);}
+.dh-ar{font-family:‘Scheherazade New’,serif;font-size:1.3rem;color:var(–text);}
+.dh-ru{font-size:0.75rem;color:var(–text2);margin-top:2px;}
+.dh-tgt{font-family:‘Cormorant Garamond’,serif;font-size:1rem;color:var(–muted);}
+
+.counter-card{margin:0 16px 12px;background:var(–card);border:1px solid var(–border);border-radius:22px;padding:26px 22px;text-align:center;position:relative;overflow:hidden;}
+.counter-card::before{content:’’;position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(212,168,74,0.05) 0%,transparent 70%);}
+.cur-ar{font-family:‘Scheherazade New’,serif;font-size:1.5rem;color:var(–gold2);margin-bottom:3px;}
+.cur-ru{font-size:0.75rem;color:var(–muted);margin-bottom:18px;}
+
+.ring-wrap{position:relative;width:180px;height:180px;margin:0 auto 20px;}
+.ring-svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(–border);stroke-width:8;}
+.ring-fl{fill:none;stroke:var(–gold2);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 0.35s ease;}
+.count-disp{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.count-n{font-family:‘Cormorant Garamond’,serif;font-size:3.5rem;font-weight:300;color:var(–text);line-height:1;}
+.count-of{font-size:0.65rem;color:var(–muted);letter-spacing:0.18em;text-transform:uppercase;margin-top:3px;}
+
+.sess-row{display:flex;justify-content:center;gap:28px;margin-bottom:20px;}
+.sess-item{text-align:center;}
+.sess-n{font-family:‘Cormorant Garamond’,serif;font-size:1.5rem;color:var(–text2);}
+.sess-l{font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(–muted);}
+
+.tap-btn{
+width:110px;height:110px;border-radius:50%;
+background:linear-gradient(135deg,var(–gold),var(–gold2));
+border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+margin:0 auto 18px;font-size:1.8rem;
+box-shadow:0 8px 28px rgba(212,168,74,0.3);
+transition:transform 0.1s ease,box-shadow 0.1s ease;
+-webkit-tap-highlight-color:transparent;user-select:none;
+}
+.tap-btn:active{transform:scale(0.91);box-shadow:0 4px 14px rgba(212,168,74,0.2);}
+.act-row{display:flex;justify-content:center;gap:10px;}
+
+.toast{
+position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);
+background:var(–gold2);color:#1a1000;padding:11px 22px;border-radius:999px;
+font-weight:600;font-size:0.84rem;transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);
+z-index:200;white-space:nowrap;pointer-events:none;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+.hist-wrap{margin:0 16px;}
+.sect-title{font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(–muted);margin-bottom:9px;padding:0 2px;}
+.hist-item{background:var(–card);border:1px solid var(–border);border-radius:12px;padding:11px 15px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;}
+.hi-name{font-size:0.85rem;color:var(–text);font-weight:500;}
+.hi-time{font-size:0.7rem;color:var(–muted);margin-top:1px;}
+.hi-cnt{font-family:‘Cormorant Garamond’,serif;font-size:1.2rem;color:var(–gold2);}
+
+/* ══════════════════════════════════════
+SADAQA PAGE
+══════════════════════════════════════ */
+.sum-row{display:flex;gap:8px;margin:0 16px 12px;}
+.sum-card{flex:1;background:var(–card);border:1px solid var(–border);border-radius:16px;padding:14px;text-align:center;}
+.sum-card.hl{background:linear-gradient(135deg,rgba(212,168,74,0.12),rgba(212,168,74,0.04));border-color:var(–borderg);}
+.s-num{font-family:‘Cormorant Garamond’,serif;font-size:1.6rem;font-weight:400;color:var(–gold2);line-height:1;}
+.s-lbl{font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(–muted);margin-top:4px;}
+
+.zakat-card{margin:0 16px 12px;}
+.sect-lbl{font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(–muted);margin-bottom:12px;}
+.inp-group{margin-bottom:10px;}
+.inp-group label{font-size:0.78rem;color:var(–text2);display:block;margin-bottom:4px;}
+.zakat-res{margin-top:14px;padding:13px;background:rgba(212,168,74,0.08);border:1px solid var(–borderg);border-radius:12px;text-align:center;display:none;}
+.zakat-amt{font-family:‘Cormorant Garamond’,serif;font-size:1.9rem;color:var(–gold2);}
+.zakat-sub{font-size:0.7rem;color:var(–muted);margin-top:3px;}
+
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:11px;}
+.cat-btn{background:var(–card2);border:1.5px solid var(–border);border-radius:11px;padding:9px 7px;text-align:center;cursor:pointer;transition:all var(–tr);font-size:0.8rem;color:var(–text2);}
+.cat-btn:hover{border-color:var(–borderg);}
+.cat-btn.sel{border-color:var(–gold2);background:rgba(212,168,74,0.1);color:var(–text);font-weight:500;}
+.cat-icon{font-size:1.1rem;display:block;margin-bottom:3px;}
+.add-row{display:flex;gap:8px;align-items:center;}
+.add-row input{flex:1;}
+.cur-lbl{color:var(–muted);font-size:0.82rem;white-space:nowrap;}
+
+.log-item{background:var(–card);border:1px solid var(–border);border-radius:12px;padding:11px 15px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;}
+.log-cat{font-size:0.86rem;color:var(–text);font-weight:500;}
+.log-date{font-size:0.7rem;color:var(–muted);margin-top:1px;}
+.log-amt{font-family:‘Cormorant Garamond’,serif;font-size:1.3rem;color:var(–gold2);}
+.del-btn{background:none;border:none;color:var(–muted);cursor:pointer;font-size:0.95rem;padding:3px;margin-left:6px;}
+.del-btn:hover{color:#e07070;}
+
+/* ══════════════════════════════════════
+HAJJ PAGE
+══════════════════════════════════════ */
+.goal-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.g-label{font-size:0.76rem;color:var(–text2);display:block;margin-bottom:4px;}
+
+.prog-big-card{
+margin:0 16px 12px;background:var(–card);border:1px solid var(–border);
+border-radius:22px;padding:24px 22px;text-align:center;
+position:relative;overflow:hidden;
+}
+.prog-big-card::before{content:’’;position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(212,168,74,0.06) 0%,transparent 65%);}
+.kaaba{font-size:2.6rem;display:block;margin-bottom:10px;}
+.big-amt{font-family:‘Cormorant Garamond’,serif;font-size:2.8rem;font-weight:300;color:var(–gold2);line-height:1;}
+.big-goal{font-size:0.82rem;color:var(–muted);margin-top:3px;margin-bottom:18px;}
+
+.arc-wrap{position:relative;width:220px;height:115px;margin:0 auto 14px;overflow:hidden;}
+.arc-svg{position:absolute;top:0;left:0;}
+.arc-bg{fill:none;stroke:var(–border);stroke-width:9;stroke-linecap:round;}
+.arc-fl{fill:none;stroke:var(–gold2);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset 0.8s cubic-bezier(0.16,1,0.3,1);}
+.arc-pct{position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-family:‘Cormorant Garamond’,serif;font-size:1.9rem;color:var(–text);}
+
+.stats-row{display:flex;justify-content:space-around;margin-bottom:16px;}
+.stat-item{text-align:center;}
+.stat-n{font-family:‘Cormorant Garamond’,serif;font-size:1.4rem;color:var(–text2);}
+.stat-l{font-size:0.58rem;letter-spacing:0.15em;text-transform:uppercase;color:var(–muted);}
+
+.dua-box{background:rgba(212,168,74,0.07);border:1px solid var(–borderg);border-radius:11px;padding:13px;text-align:center;}
+.dua-ar{font-family:‘Scheherazade New’,serif;font-size:1.2rem;color:var(–gold2);}
+.dua-ru{font-size:0.74rem;color:var(–muted);margin-top:3px;}
+
+.milestone{background:linear-gradient(135deg,rgba(212,168,74,0.13),rgba(212,168,74,0.04));border:1px solid var(–borderg);border-radius:14px;padding:13px 17px;margin:0 16px 12px;text-align:center;}
+.ms-icon{font-size:1.5rem;margin-bottom:5px;}
+.ms-txt{font-size:0.85rem;color:var(–text2);}
+.ms-txt strong{color:var(–gold2);}
+
+.quick-btns{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:11px;}
+.quick-btn{padding:8px 13px;border-radius:10px;background:var(–card2);border:1px solid var(–border);color:var(–text2);font-size:0.8rem;cursor:pointer;transition:all var(–tr);}
+.quick-btn:hover{border-color:var(–borderg);color:var(–gold2);}
+.note-input{margin-top:8px;}
+
+/* ══════════════════════════════════════
+ANIMATIONS
+══════════════════════════════════════ */
+@keyframes riseUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes glow{from{filter:drop-shadow(0 0 4px rgba(212,168,74,0.4));}to{filter:drop-shadow(0 0 18px rgba(212,168,74,0.9));}}
+.a0{animation:riseUp 0.8s cubic-bezier(0.16,1,0.3,1) both;}
+.a1{animation:riseUp 0.8s 0.07s cubic-bezier(0.16,1,0.3,1) both;}
+.a2{animation:riseUp 0.8s 0.14s cubic-bezier(0.16,1,0.3,1) both;}
+.a3{animation:riseUp 0.8s 0.21s cubic-bezier(0.16,1,0.3,1) both;}
+.a4{animation:riseUp 0.8s 0.28s cubic-bezier(0.16,1,0.3,1) both;}
 </style>
+
 </head>
 <body>
-<div class="page">
-  <div class="header">
+
+<!-- ══ NAVBAR ══ -->
+
+<nav class="navbar">
+  <div class="nav-tabs">
+    <a class="nav-tab" data-page="namaz" onclick="goTo('namaz')">
+      <span class="ni">🕌</span><span>Намаз</span>
+    </a>
+    <a class="nav-tab" data-page="tasbih" onclick="goTo('tasbih')">
+      <span class="ni">📿</span><span>Тасбих</span>
+    </a>
+    <a class="nav-tab" data-page="sadaqa" onclick="goTo('sadaqa')">
+      <span class="ni">💛</span><span>Садака</span>
+    </a>
+    <a class="nav-tab" data-page="hajj" onclick="goTo('hajj')">
+      <span class="ni">🕋</span><span>Хадж</span>
+    </a>
+  </div>
+  <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+</nav>
+
+<div class="page-wrap">
+
+<!-- ══════════════════════════════════════
+     PAGE: NAMAZ
+══════════════════════════════════════ -->
+
+<div class="page active" id="page-namaz">
+  <div class="nz-header a0">
     <span class="crescent">☽</span>
-    <div class="arabic-title">أوقات الصلاة</div>
-    <div class="city-label">Баку &nbsp;·&nbsp; Азербайджан</div>
+    <div class="ar-title">أوقات الصلاة</div>
+    <div class="city-lbl">Баку &nbsp;·&nbsp; Азербайджан</div>
   </div>
 
-  <div class="card clock-card anim anim-1">
+  <div class="card clock-card a1">
     <div>
       <div class="date-greg" id="date-greg">—</div>
       <div class="date-hijri" id="date-hijri">—</div>
     </div>
     <div class="live-clock">
-      <span id="clock-hm">--:--</span><span class="secs" id="clock-s">:--</span>
+      <span id="clk-hm">--:--</span><span class="secs" id="clk-s">:--</span>
     </div>
   </div>
 
-  <div class="progress-wrap anim anim-2">
-    <div class="progress-label">
-      <span>Полночь</span><span id="pct">0%</span><span>Полночь</span>
-    </div>
-    <div class="progress-track">
-      <div class="progress-fill" id="pfill" style="width:0%"></div>
-    </div>
+  <div class="prog-wrap a1">
+    <div class="prog-lbl"><span>Полночь</span><span id="prog-pct">0%</span><span>Полночь</span></div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
   </div>
 
-  <div class="card card-gold next-card anim anim-2" id="next-card" style="display:none">
+  <div class="card card-gold next-card a2" id="next-card" style="display:none">
     <div>
       <div class="next-tag">Следующий намаз</div>
       <div class="next-name" id="next-name">—</div>
@@ -170,22 +414,22 @@
     </div>
   </div>
 
-  <div class="card sun-strip anim anim-3" id="sun-strip" style="display:none">
+  <div class="card sun-strip a3" id="sun-strip" style="display:none">
     <div class="sun-item">
       <span class="sun-icon">🌅</span>
-      <div class="sun-label">Восход</div>
+      <div class="sun-lbl">Восход</div>
       <div class="sun-time" id="sun-rise">—</div>
     </div>
     <div class="sun-div"></div>
     <div class="sun-item">
       <span class="sun-icon">🌇</span>
-      <div class="sun-label">Закат</div>
+      <div class="sun-lbl">Закат</div>
       <div class="sun-time" id="sun-set">—</div>
     </div>
     <div class="sun-div"></div>
     <div class="sun-item">
       <span class="sun-icon">🌑</span>
-      <div class="sun-label">Ислам. полночь</div>
+      <div class="sun-lbl">Ислам. полночь</div>
       <div class="sun-time" id="sun-mid">—</div>
     </div>
   </div>
@@ -194,24 +438,212 @@
     <div class="loading-wrap"><div class="spinner"></div><div>Загрузка...</div></div>
   </div>
 
-  <div class="footer anim anim-5">AlAdhan API · Muslim World League · Баку</div>
+  <div class="nz-footer a4">AlAdhan API · Muslim World League · Баку</div>
 </div>
 
-<script src="js/app.js"></script>
-<script>
-Theme.init();
-renderNavbar();
+<!-- ══════════════════════════════════════
+     PAGE: TASBIH
+══════════════════════════════════════ -->
 
-const PRAYERS = [
-  { key:'Fajr',    ru:'Фаджр',  ar:'الفجر',  icon:'🌙' },
-  { key:'Dhuhr',   ru:'Зухр',   ar:'الظهر',  icon:'☀️' },
-  { key:'Asr',     ru:'Аср',    ar:'العصر',  icon:'🌤️' },
-  { key:'Maghrib', ru:'Магриб', ar:'المغرب', icon:'🌆' },
-  { key:'Isha',    ru:'Иша',    ar:'العشاء', icon:'✨' },
+<div class="page" id="page-tasbih">
+  <div class="ph a0">
+    <span class="ph-icon">📿</span>
+    <div class="ph-title">Тасбих</div>
+    <div class="ph-sub">Счётчик зикра</div>
+  </div>
+
+  <div class="dhikr-list a1" id="dhikr-list"></div>
+
+  <div class="counter-card a2">
+    <div class="cur-ar" id="cur-ar">سُبْحَانَ اللَّهِ</div>
+    <div class="cur-ru" id="cur-ru">Субханаллах</div>
+    <div class="ring-wrap">
+      <svg class="ring-svg" width="180" height="180" viewBox="0 0 180 180">
+        <circle class="ring-bg" cx="90" cy="90" r="78"/>
+        <circle class="ring-fl" id="ring" cx="90" cy="90" r="78"
+          stroke-dasharray="490" stroke-dashoffset="490"/>
+      </svg>
+      <div class="count-disp">
+        <div class="count-n" id="count-n">0</div>
+        <div class="count-of" id="count-of">из 33</div>
+      </div>
+    </div>
+    <div class="sess-row">
+      <div class="sess-item"><div class="sess-n" id="sess-n">0</div><div class="sess-l">Серий</div></div>
+      <div class="sess-item"><div class="sess-n" id="total-n">0</div><div class="sess-l">Всего сегодня</div></div>
+    </div>
+    <button class="tap-btn" id="tap-btn" onclick="tap()">📿</button>
+    <div class="act-row">
+      <button class="btn btn-ghost" onclick="resetTas()">↺ Сброс</button>
+      <button class="btn btn-ghost" onclick="nextDhikr()">Следующий →</button>
+    </div>
+  </div>
+
+  <div class="hist-wrap a3">
+    <div class="sect-title">История сегодня</div>
+    <div id="hist-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE: SADAQA
+══════════════════════════════════════ -->
+
+<div class="page" id="page-sadaqa">
+  <div class="ph a0">
+    <span class="ph-icon">💛</span>
+    <div class="ph-title">Садака</div>
+    <div class="ph-sub">Трекер пожертвований</div>
+  </div>
+
+  <div class="sum-row">
+    <div class="sum-card a0"><div class="s-num" id="sd-today">0 ₼</div><div class="s-lbl">Сегодня</div></div>
+    <div class="sum-card hl a1"><div class="s-num" id="sd-month">0 ₼</div><div class="s-lbl">Месяц</div></div>
+    <div class="sum-card a2"><div class="s-num" id="sd-all">0 ₼</div><div class="s-lbl">Всего</div></div>
+  </div>
+
+  <div class="card zakat-card a2">
+    <div class="sect-lbl">⚖️ Калькулятор закята</div>
+    <div class="inp-group"><label>Накопления (₼)</label><input type="number" id="z-wealth" placeholder="0" oninput="calcZakat()"/></div>
+    <div class="inp-group"><label>Нисаб (≈ 85г золота в ₼)</label><input type="number" id="z-nisab" placeholder="5000" value="5000" oninput="calcZakat()"/></div>
+    <div class="zakat-res" id="zakat-res">
+      <div class="zakat-amt" id="zakat-amt">0 ₼</div>
+      <div class="zakat-sub">2.5% от накоплений (фард)</div>
+    </div>
+  </div>
+
+  <div class="card a3">
+    <div class="sect-lbl">➕ Добавить пожертвование</div>
+    <div class="cat-grid" id="cat-grid"></div>
+    <div class="add-row">
+      <input type="number" id="sd-amt" placeholder="Сумма" step="0.01"/>
+      <span class="cur-lbl">₼</span>
+      <button class="btn btn-gold" onclick="addDon()">Добавить</button>
+    </div>
+  </div>
+
+  <div class="hist-wrap a4">
+    <div class="sect-title">История пожертвований</div>
+    <div id="don-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE: HAJJ
+══════════════════════════════════════ -->
+
+<div class="page" id="page-hajj">
+  <div class="ph a0">
+    <span class="ph-icon">🕋</span>
+    <div class="ph-title">Хадж</div>
+    <div class="ph-sub">Халяльные накопления</div>
+  </div>
+
+  <div class="card a1">
+    <div class="sect-lbl" style="margin-bottom:12px">🎯 Настройка цели</div>
+    <div class="goal-inputs">
+      <div><label class="g-label">Цель (₼)</label><input type="number" id="hj-goal" placeholder="20000" oninput="saveHajjCfg()"/></div>
+      <div><label class="g-label">Год хаджа</label><input type="number" id="hj-year" placeholder="2027" oninput="saveHajjCfg()"/></div>
+    </div>
+  </div>
+
+  <div class="prog-big-card a2">
+    <span class="kaaba">🕋</span>
+    <div class="big-amt" id="hj-saved">0 ₼</div>
+    <div class="big-goal" id="hj-goal-lbl">из 0 ₼ цели</div>
+    <div class="arc-wrap">
+      <svg class="arc-svg" width="220" height="115" viewBox="0 0 220 115">
+        <path class="arc-bg" d="M 15 110 A 95 95 0 0 1 205 110"/>
+        <path class="arc-fl" id="arc-fl" d="M 15 110 A 95 95 0 0 1 205 110" stroke-dasharray="298" stroke-dashoffset="298"/>
+      </svg>
+      <div class="arc-pct" id="arc-pct">0%</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item"><div class="stat-n" id="hj-rem">0 ₼</div><div class="stat-l">Осталось</div></div>
+      <div class="stat-item"><div class="stat-n" id="hj-mos">—</div><div class="stat-l">Месяцев</div></div>
+      <div class="stat-item"><div class="stat-n" id="hj-mon">0 ₼</div><div class="stat-l">В месяц</div></div>
+    </div>
+    <div class="dua-box">
+      <div class="dua-ar">لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ</div>
+      <div class="dua-ru">Лаббайк Аллахумма лаббайк</div>
+    </div>
+  </div>
+
+  <div id="hj-milestone"></div>
+
+  <div class="card a3">
+    <div class="sect-lbl" style="margin-bottom:11px">➕ Добавить пополнение</div>
+    <div class="quick-btns">
+      <div class="quick-btn" onclick="hjQuick(50)">+50 ₼</div>
+      <div class="quick-btn" onclick="hjQuick(100)">+100 ₼</div>
+      <div class="quick-btn" onclick="hjQuick(200)">+200 ₼</div>
+      <div class="quick-btn" onclick="hjQuick(500)">+500 ₼</div>
+    </div>
+    <div class="add-row" style="margin-bottom:8px">
+      <input type="number" id="hj-amt" placeholder="Сумма ₼" step="0.01"/>
+      <button class="btn btn-gold" onclick="addHajj()">Добавить</button>
+    </div>
+    <input class="note-input" type="text" id="hj-note" placeholder="Заметка (необязательно)"/>
+  </div>
+
+  <div class="hist-wrap a4">
+    <div class="sect-title">История пополнений</div>
+    <div id="hj-log"></div>
+  </div>
+</div>
+
+</div><!-- /page-wrap -->
+
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
+
+<script>
+/* ── Storage ── */
+const S={
+  get:(k,d=null)=>{try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d;}catch{return d;}},
+  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+};
+
+/* ── Theme ── */
+function applyTheme(m){
+  document.documentElement.setAttribute('data-theme',m);
+  S.set('theme',m);
+  const b=document.getElementById('theme-btn');
+  if(b)b.textContent=m==='dark'?'☀️':'🌙';
+}
+function toggleTheme(){applyTheme(S.get('theme','light')==='dark'?'light':'dark');}
+applyTheme(S.get('theme','light'));
+
+/* ── Navigation ── */
+function goTo(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelector(`[data-page="${page}"]`).classList.add('active');
+  S.set('lastPage',page);
+  window.scrollTo(0,0);
+}
+// restore last page
+const lp=S.get('lastPage','namaz');
+if(lp!=='namaz')goTo(lp);
+else document.querySelector('[data-page="namaz"]').classList.add('active');
+
+/* ══════════════════════════════════════
+   NAMAZ
+══════════════════════════════════════ */
+const PRAYERS=[
+  {key:'Fajr',   ru:'Фаджр',  ar:'الفجر',  icon:'🌙'},
+  {key:'Dhuhr',  ru:'Зухр',   ar:'الظهر',  icon:'☀️'},
+  {key:'Asr',    ru:'Аср',    ar:'العصر',  icon:'🌤️'},
+  {key:'Maghrib',ru:'Магриб', ar:'المغرب', icon:'🌆'},
+  {key:'Isha',   ru:'Иша',    ar:'العشاء', icon:'✨'},
 ];
-const HM = ['Мухаррам','Сафар','Рабиуль-авваль','Рабиуль-ахир','Джумадаль-уля','Джумадаль-ахира','Раджаб','Шаабан','Рамадан','Шавваль','Зуль-Каада','Зуль-Хиджжа'];
+const HM=['Мухаррам','Сафар','Рабиуль-авваль','Рабиуль-ахир','Джумадаль-уля','Джумадаль-ахира','Раджаб','Шаабан','Рамадан','Шавваль','Зуль-Каада','Зуль-Хиджжа'];
 const DAYS=['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
-const MON=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const MONS=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 
 let timings=null;
 const strip=s=>(s||'--:--').split(' ')[0].substring(0,5);
@@ -220,17 +652,17 @@ const hms=s=>`${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor(
 
 function tick(){
   const n=new Date(),h=n.getHours(),m=n.getMinutes(),s=n.getSeconds();
-  document.getElementById('clock-hm').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-  document.getElementById('clock-s').textContent=`:${String(s).padStart(2,'0')}`;
+  document.getElementById('clk-hm').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  document.getElementById('clk-s').textContent=`:${String(s).padStart(2,'0')}`;
   const pct=((h*3600+m*60+s)/864).toFixed(1);
-  document.getElementById('pfill').style.width=pct+'%';
-  document.getElementById('pct').textContent=pct+'%';
-  if(timings) updateActive(n);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-pct').textContent=pct+'%';
+  if(timings)updateActive(n);
 }
 
 function updateActive(now){
   const ns=now.getHours()*3600+now.getMinutes()*60+now.getSeconds();
-  const cards=document.querySelectorAll('.prayer-card');
+  const cards=document.querySelectorAll('.pc');
   let nxt=-1,minD=Infinity;
   PRAYERS.forEach((p,i)=>{
     const d=parseMins(timings[p.key])*60-ns;
@@ -244,7 +676,7 @@ function updateActive(now){
     nc.style.display='flex';
     document.getElementById('next-name').textContent=PRAYERS[nxt].ru;
     document.getElementById('countdown').textContent=hms(minD);
-  } else {
+  }else{
     nc.style.display='flex';
     document.getElementById('next-name').textContent='Фаджр (завтра)';
     document.getElementById('countdown').textContent=hms((86400-ns)+parseMins(timings['Fajr'])*60);
@@ -252,35 +684,241 @@ function updateActive(now){
   }
 }
 
-async function load(){
+async function loadPrayers(){
   const t=new Date();
   try{
     const j=await(await fetch(`https://api.aladhan.com/v1/timingsByCity?city=Baku&country=AZ&method=3&date=${t.getDate()}-${t.getMonth()+1}-${t.getFullYear()}`)).json();
     if(j.code!==200)throw 0;
-    timings=j.data.timings;
-    const d=j.data.date;
-    document.getElementById('date-greg').textContent=`${DAYS[t.getDay()]}, ${t.getDate()} ${MON[t.getMonth()]} ${t.getFullYear()}`;
+    timings=j.data.timings;const d=j.data.date;
+    document.getElementById('date-greg').textContent=`${DAYS[t.getDay()]}, ${t.getDate()} ${MONS[t.getMonth()]} ${t.getFullYear()}`;
     document.getElementById('date-hijri').textContent=`${d.hijri.day} ${HM[+d.hijri.month.number-1]} ${d.hijri.year} г.х.`;
     document.getElementById('sun-rise').textContent=strip(timings['Sunrise']);
     document.getElementById('sun-set').textContent=strip(timings['Sunset']);
     document.getElementById('sun-mid').textContent=strip(timings['Midnight']);
     document.getElementById('sun-strip').style.display='flex';
     const cont=document.getElementById('prayers-container');
-    cont.innerHTML='<div class="prayers-section" id="pl"></div>';
+    cont.innerHTML='<div class="prayers-list" id="pl"></div>';
     PRAYERS.forEach((p,i)=>{
       const c=document.createElement('div');
-      c.className='prayer-card';c.style.animationDelay=`${0.3+i*0.07}s`;
-      c.innerHTML=`<div class="p-left"><div class="p-dot">${p.icon}</div><div><div class="p-name-ru">${p.ru}</div><div class="p-name-ar">${p.ar}</div></div></div><div class="p-time">${strip(timings[p.key])}</div>`;
+      c.className='pc';c.style.animationDelay=`${0.28+i*0.07}s`;
+      c.innerHTML=`<div class="pc-left"><div class="pc-dot">${p.icon}</div><div><div class="pc-ru">${p.ru}</div><div class="pc-ar">${p.ar}</div></div></div><div class="pc-time">${strip(timings[p.key])}</div>`;
       document.getElementById('pl').appendChild(c);
     });
     document.getElementById('next-card').style.display='flex';
     updateActive(new Date());
   }catch{
-    document.getElementById('prayers-container').innerHTML='<div class="loading-wrap" style="color:#e07070">⚠️ Не удалось загрузить данные.<br>Проверь интернет.</div>';
+    document.getElementById('prayers-container').innerHTML='<div class="loading-wrap" style="color:#e07070">⚠️ Не удалось загрузить.<br>Проверь интернет.</div>';
   }
 }
+loadPrayers();tick();setInterval(tick,1000);
 
-load();tick();setInterval(tick,1000);
+/* ══════════════════════════════════════
+   TASBIH
+══════════════════════════════════════ */
+const DHIKRS=[
+  {ar:'سُبْحَانَ اللَّهِ',         ru:'Субханаллах',          tgt:33, icon:'☀️'},
+  {ar:'الْحَمْدُ لِلَّهِ',          ru:'Альхамдулилла',        tgt:33, icon:'🌿'},
+  {ar:'اللَّهُ أَكْبَرُ',           ru:'Аллаху Акбар',         tgt:34, icon:'🕌'},
+  {ar:'لَا إِلَٰهَ إِلَّا اللَّه', ru:'Ля иляха илля Ллах',   tgt:100,icon:'✨'},
+  {ar:'أَسْتَغْفِرُ اللَّه',        ru:'Астагфируллах',        tgt:100,icon:'💧'},
+  {ar:'اللَّهُمَّ صَلِّ عَلَى مُحَمَّد',ru:'Салавут',         tgt:10, icon:'🌹'},
+];
+
+const todayKey=new Date().toDateString();
+let ts=S.get('tasbih',{idx:0,count:0,sessions:0,total:0,history:[],day:''});
+if(ts.day!==todayKey){ts={idx:ts.idx,count:0,sessions:0,total:0,history:[],day:todayKey};S.set('tasbih',ts);}
+
+function saveTas(){S.set('tasbih',ts);}
+
+function renderDhikrList(){
+  document.getElementById('dhikr-list').innerHTML=DHIKRS.map((d,i)=>`
+    <div class="dhikr-opt ${i===ts.idx?'sel':''}" onclick="selDhikr(${i})">
+      <div><div class="dh-ar">${d.ar}</div><div class="dh-ru">${d.ru}</div></div>
+      <div class="dh-tgt">${d.icon} ×${d.tgt}</div>
+    </div>`).join('');
+}
+
+function renderCounter(){
+  const d=DHIKRS[ts.idx];
+  document.getElementById('cur-ar').textContent=d.ar;
+  document.getElementById('cur-ru').textContent=d.ru;
+  document.getElementById('count-n').textContent=ts.count;
+  document.getElementById('count-of').textContent=`из ${d.tgt}`;
+  document.getElementById('sess-n').textContent=ts.sessions;
+  document.getElementById('total-n').textContent=ts.total;
+  const circ=2*Math.PI*78;
+  document.getElementById('ring').style.strokeDashoffset=circ*(1-Math.min(ts.count/d.tgt,1));
+}
+
+function renderHist(){
+  const el=document.getElementById('hist-list');
+  const h=ts.history.slice(-10).reverse();
+  el.innerHTML=h.length?h.map(e=>`<div class="hist-item"><div><div class="hi-name">${e.ru}</div><div class="hi-time">${e.time}</div></div><div class="hi-cnt">${e.count}×</div></div>`).join('')
+    :'<div style="text-align:center;color:var(--muted);font-size:0.85rem;padding:18px">Начни считать 📿</div>';
+}
+
+function selDhikr(i){ts.idx=i;ts.count=0;saveTas();renderDhikrList();renderCounter();}
+
+function tap(){
+  ts.count++;ts.total++;
+  const d=DHIKRS[ts.idx];
+  if(ts.count>=d.tgt){
+    ts.sessions++;
+    ts.history.push({ru:d.ru,count:d.tgt,time:new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})});
+    showToast(d.icon+' '+d.ru+' ×'+d.tgt+' ✓');
+    if(ts.idx<2){ts.idx++;ts.count=0;}else{ts.count=0;}
+    renderDhikrList();
+  }
+  saveTas();renderCounter();renderHist();
+}
+
+function resetTas(){ts.count=0;saveTas();renderCounter();}
+function nextDhikr(){ts.idx=(ts.idx+1)%DHIKRS.length;ts.count=0;saveTas();renderDhikrList();renderCounter();}
+
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('page-tasbih').classList.contains('active')){
+    if(e.code==='Space'||e.code==='Enter'){e.preventDefault();tap();}
+    if(e.code==='KeyR')resetTas();
+  }
+});
+
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+renderDhikrList();renderCounter();renderHist();
+
+/* ══════════════════════════════════════
+   SADAQA
+══════════════════════════════════════ */
+const CATS=[
+  {icon:'🕌',name:'Мечеть'},{icon:'🍞',name:'Еда бедным'},
+  {icon:'📚',name:'Образование'},{icon:'💊',name:'Медицина'},
+  {icon:'👨‍👩‍👧',name:'Семья'},{icon:'🌍',name:'Другое'},
+];
+let selCat=0;
+let dons=S.get('sadaqa',[]);
+
+function renderCats(){
+  document.getElementById('cat-grid').innerHTML=CATS.map((c,i)=>`
+    <div class="cat-btn ${i===selCat?'sel':''}" onclick="selCatFn(${i})">
+      <span class="cat-icon">${c.icon}</span>${c.name}
+    </div>`).join('');
+}
+function selCatFn(i){selCat=i;renderCats();}
+
+function calcZakat(){
+  const w=parseFloat(document.getElementById('z-wealth').value)||0;
+  const n=parseFloat(document.getElementById('z-nisab').value)||5000;
+  const r=document.getElementById('zakat-res');
+  if(w>=n){r.style.display='block';document.getElementById('zakat-amt').textContent=(w*0.025).toFixed(2)+' ₼';}
+  else r.style.display='none';
+}
+
+function addDon(){
+  const a=parseFloat(document.getElementById('sd-amt').value);
+  if(!a||a<=0)return;
+  dons.push({cat:CATS[selCat].name,icon:CATS[selCat].icon,amount:a,date:new Date().toISOString()});
+  S.set('sadaqa',dons);document.getElementById('sd-amt').value='';
+  renderSdStats();renderDonList();
+}
+
+function delDon(i){dons.splice(i,1);S.set('sadaqa',dons);renderSdStats();renderDonList();}
+
+function renderSdStats(){
+  const now=new Date(),tds=now.toDateString(),ms=`${now.getMonth()}-${now.getFullYear()}`;
+  let td=0,mo=0,al=0;
+  dons.forEach(d=>{const dd=new Date(d.date);al+=d.amount;if(dd.toDateString()===tds)td+=d.amount;if(`${dd.getMonth()}-${dd.getFullYear()}`===ms)mo+=d.amount;});
+  document.getElementById('sd-today').textContent=td.toFixed(2)+' ₼';
+  document.getElementById('sd-month').textContent=mo.toFixed(2)+' ₼';
+  document.getElementById('sd-all').textContent=al.toFixed(2)+' ₼';
+}
+
+function renderDonList(){
+  const el=document.getElementById('don-list');
+  if(!dons.length){el.innerHTML='<div style="text-align:center;color:var(--muted);font-size:0.85rem;padding:18px">Пожертвований пока нет 💛</div>';return;}
+  el.innerHTML=dons.slice().reverse().map((d,ri)=>{
+    const i=dons.length-1-ri,dt=new Date(d.date);
+    return`<div class="log-item"><div><div class="log-cat">${d.icon} ${d.cat}</div><div class="log-date">${dt.toLocaleDateString('ru',{day:'numeric',month:'long'})}</div></div><div style="display:flex;align-items:center"><div class="log-amt">${d.amount.toFixed(2)} ₼</div><button class="del-btn" onclick="delDon(${i})">✕</button></div></div>`;
+  }).join('');
+}
+
+renderCats();renderSdStats();renderDonList();
+
+/* ══════════════════════════════════════
+   HAJJ
+══════════════════════════════════════ */
+let hjCfg=S.get('hajj_cfg',{goal:20000,year:new Date().getFullYear()+1});
+let hjLog=S.get('hajj_log',[]);
+
+document.getElementById('hj-goal').value=hjCfg.goal;
+document.getElementById('hj-year').value=hjCfg.year;
+
+function saveHajjCfg(){
+  hjCfg.goal=parseFloat(document.getElementById('hj-goal').value)||0;
+  hjCfg.year=parseInt(document.getElementById('hj-year').value)||new Date().getFullYear()+1;
+  S.set('hajj_cfg',hjCfg);renderHajj();
+}
+
+function hjTotal(){return hjLog.reduce((a,b)=>a+b.amount,0);}
+
+function renderHajj(){
+  const saved=hjTotal(),goal=hjCfg.goal||1,pct=Math.min(saved/goal,1);
+  document.getElementById('hj-saved').textContent=saved.toFixed(0)+' ₼';
+  document.getElementById('hj-goal-lbl').textContent=`из ${goal.toFixed(0)} ₼ цели`;
+  document.getElementById('arc-pct').textContent=Math.round(pct*100)+'%';
+  document.getElementById('arc-fl').style.strokeDashoffset=298*(1-pct);
+  const rem=Math.max(goal-saved,0);
+  document.getElementById('hj-rem').textContent=rem.toFixed(0)+' ₼';
+  const now=new Date(),target=new Date(hjCfg.year,4,1);
+  const mos=Math.max(Math.ceil((target-now)/(1000*60*60*24*30.4)),1);
+  document.getElementById('hj-mos').textContent=mos;
+  document.getElementById('hj-mon').textContent=rem>0?(rem/mos).toFixed(0)+' ₼':'✓';
+  renderMilestone(pct);renderHjLog();
+}
+
+function renderMilestone(pct){
+  const MS=[
+    {at:0.1, icon:'🌱',msg:'Первые 10% — <strong>Машааллах!</strong>'},
+    {at:0.25,icon:'⭐',msg:'Четверть пути! <strong>Бараказналлах!</strong>'},
+    {at:0.5, icon:'🌙',msg:'Половина! <strong>Аллаху Акбар!</strong>'},
+    {at:0.75,icon:'🔥',msg:'75% — финишная прямая!'},
+    {at:1.0, icon:'🕋',msg:'<strong>Лаббайк!</strong> Цель достигнута!'},
+  ];
+  const mb=document.getElementById('hj-milestone');
+  let show=null;
+  MS.forEach(m=>{if(pct>=m.at)show=m;});
+  mb.innerHTML=show?`<div class="milestone"><div class="ms-icon">${show.icon}</div><div class="ms-txt">${show.msg}</div></div>`:'';
+}
+
+function addHajj(a){
+  const amt=a||parseFloat(document.getElementById('hj-amt').value);
+  if(!amt||amt<=0)return;
+  const note=document.getElementById('hj-note').value||'';
+  hjLog.push({amount:amt,note,date:new Date().toISOString()});
+  S.set('hajj_log',hjLog);
+  document.getElementById('hj-amt').value='';
+  document.getElementById('hj-note').value='';
+  renderHajj();
+}
+
+function hjQuick(n){document.getElementById('hj-amt').value=n;addHajj(n);}
+
+function delHajj(i){hjLog.splice(i,1);S.set('hajj_log',hjLog);renderHajj();}
+
+function renderHjLog(){
+  const el=document.getElementById('hj-log');
+  if(!hjLog.length){el.innerHTML='<div style="text-align:center;color:var(--muted);font-size:0.85rem;padding:18px">Добавь первое пополнение 🕋</div>';return;}
+  el.innerHTML=hjLog.slice().reverse().map((l,ri)=>{
+    const i=hjLog.length-1-ri,dt=new Date(l.date);
+    return`<div class="log-item"><div><div class="log-cat">${l.note||'Пополнение'}</div><div class="log-date">${dt.toLocaleDateString('ru',{day:'numeric',month:'long'})}</div></div><div style="display:flex;align-items:center"><div class="log-amt">+${l.amount.toFixed(0)} ₼</div><button class="del-btn" onclick="delHajj(${i})">✕</button></div></div>`;
+  }).join('');
+}
+
+renderHajj();
 </script>
+
 </body>
 </html>
