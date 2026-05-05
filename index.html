@@ -5,28 +5,28 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Намаз — Баку</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Scheherazade+New:wght@400;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Scheherazade+New:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-–bg:     #0f1218;
-–card:   #1a1f2e;
-–card2:  #212736;
-–gold:   #d4aa55;
-–gold2:  #eacc80;
-–gold3:  #f5e4a8;
-–copper: #c08840;
-–text:   #f0e8d4;       /* bright warm white */
-–text2:  #c8bfa8;       /* secondary text */
-–muted:  #8a8070;       /* muted labels */
-–border: rgba(212,170,85,0.2);
+–bg:      #0d1017;
+–card:    #161b25;
+–card2:   #1c2230;
+–white:   #ffffff;
+–gray1:   #d0d4dc;   /* secondary text */
+–gray2:   #8a8f9a;   /* muted labels */
+–gray3:   #444a56;   /* very muted / borders */
+–gold:    #d4a84a;   /* accent only */
+–gold2:   #ecc870;   /* bright accent */
+–border:  rgba(255,255,255,0.07);
+–border-active: rgba(212,168,74,0.4);
 }
 
 body {
 background: var(–bg);
-color: var(–text);
-font-family: ‘Jost’, sans-serif;
+color: var(–white);
+font-family: ‘Inter’, sans-serif;
 font-weight: 400;
 min-height: 100vh;
 display: flex;
@@ -36,19 +36,21 @@ padding: 0 0 60px;
 overflow-x: hidden;
 }
 
-/* Subtle top glow only */
+/* subtle top vignette */
 body::before {
 content: ‘’;
 position: fixed; inset: 0; z-index: 0; pointer-events: none;
-background: radial-gradient(ellipse 100% 40% at 50% 0%, rgba(212,170,85,0.07) 0%, transparent 60%);
+background:
+radial-gradient(ellipse 100% 35% at 50% 0%, rgba(212,168,74,0.06) 0%, transparent 60%),
+radial-gradient(ellipse 80% 30% at 50% 100%, rgba(0,0,0,0.4) 0%, transparent 70%);
 }
 
-/* Faint tile pattern */
+/* geometric tile */
 body::after {
 content: ‘’;
 position: fixed; inset: 0; z-index: 0; pointer-events: none;
-opacity: 0.03;
-background-image: url(“data:image/svg+xml,%3Csvg width=‘80’ height=‘80’ viewBox=‘0 0 80 80’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cg fill=‘none’%3E%3Cpolygon points=‘40,2 78,22 78,58 40,78 2,58 2,22’ stroke=’%23d4aa55’ stroke-width=‘1’/%3E%3Cpolygon points=‘40,18 62,30 62,50 40,62 18,50 18,30’ stroke=’%23d4aa55’ stroke-width=‘0.5’/%3E%3C/g%3E%3C/svg%3E”);
+opacity: 0.025;
+background-image: url(“data:image/svg+xml,%3Csvg width=‘80’ height=‘80’ viewBox=‘0 0 80 80’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cg fill=‘none’%3E%3Cpolygon points=‘40,2 78,22 78,58 40,78 2,58 2,22’ stroke=’%23ffffff’ stroke-width=‘0.8’/%3E%3Cpolygon points=‘40,18 62,30 62,50 40,62 18,50 18,30’ stroke=’%23ffffff’ stroke-width=‘0.4’/%3E%3C/g%3E%3C/svg%3E”);
 }
 
 .page {
@@ -64,34 +66,34 @@ animation: riseUp 0.9s cubic-bezier(0.16,1,0.3,1) both;
 }
 
 .crescent {
-font-size: 1.8rem; display: block; margin-bottom: 10px;
+font-size: 1.6rem; display: block; margin-bottom: 10px;
+filter: drop-shadow(0 0 8px rgba(212,168,74,0.6));
 animation: glow 3s ease-in-out infinite alternate;
 }
 @keyframes glow {
-from { filter: drop-shadow(0 0 6px rgba(212,170,85,0.4)); }
-to   { filter: drop-shadow(0 0 20px rgba(212,170,85,0.9)); }
+from { filter: drop-shadow(0 0 4px rgba(212,168,74,0.4)); }
+to   { filter: drop-shadow(0 0 18px rgba(212,168,74,0.9)); }
 }
 
 .arabic-title {
 font-family: ‘Scheherazade New’, serif;
-font-size: 2.6rem;
-color: var(–gold2);          /* bright gold, easy to read */
+font-size: 2.7rem;
+color: var(–white);          /* pure white */
 line-height: 1;
 margin-bottom: 10px;
-text-shadow: 0 2px 20px rgba(212,170,85,0.25);
 }
 
 .city-label {
-font-size: 0.7rem;
-letter-spacing: 0.4em;
+font-size: 0.68rem;
+letter-spacing: 0.42em;
 text-transform: uppercase;
-color: var(–text2);          /* was –muted, now brighter */
+color: var(–gray2);
 font-weight: 300;
 }
 
 /* ── Clock card ── */
 .clock-card {
-margin: 0 16px 14px;
+margin: 0 16px 12px;
 background: var(–card);
 border: 1px solid var(–border);
 border-radius: 18px;
@@ -102,13 +104,14 @@ animation: riseUp 0.9s 0.08s cubic-bezier(0.16,1,0.3,1) both;
 
 .date-greg {
 font-size: 0.92rem;
-color: var(–text);           /* full brightness */
+color: var(–white);
 font-weight: 500;
+letter-spacing: -0.01em;
 }
 
 .date-hijri {
-font-size: 0.75rem;
-color: var(–text2);          /* readable secondary */
+font-size: 0.74rem;
+color: var(–gray2);
 font-family: ‘Cormorant Garamond’, serif;
 font-style: italic;
 margin-top: 3px;
@@ -116,91 +119,93 @@ margin-top: 3px;
 
 .live-clock {
 font-family: ‘Cormorant Garamond’, serif;
-font-size: 2.1rem;
+font-size: 2.2rem;
 font-weight: 400;
-color: var(–gold2);
-letter-spacing: 0.03em;
+color: var(–gold2);          /* GOLD — only accent */
+letter-spacing: 0.02em;
 line-height: 1;
 white-space: nowrap;
 }
 .live-clock .secs {
-font-size: 1.15rem;
+font-size: 1.1rem;
 color: var(–gold);
+opacity: 0.8;
 }
 
 /* ── Progress ── */
 .progress-wrap {
-margin: 0 16px 14px;
-animation: riseUp 0.9s 0.14s cubic-bezier(0.16,1,0.3,1) both;
+margin: 0 16px 12px;
+animation: riseUp 0.9s 0.13s cubic-bezier(0.16,1,0.3,1) both;
 }
 .progress-label {
 display: flex; justify-content: space-between;
-font-size: 0.65rem;
-letter-spacing: 0.18em;
+font-size: 0.62rem;
+letter-spacing: 0.16em;
 text-transform: uppercase;
-color: var(–text2);          /* was –muted */
-margin-bottom: 8px;
+color: var(–gray2);
+margin-bottom: 7px;
+font-weight: 400;
 }
 .progress-track {
-height: 4px;
-background: rgba(212,170,85,0.1);
+height: 3px;
+background: rgba(255,255,255,0.06);
 border-radius: 999px; overflow: hidden;
 }
 .progress-fill {
 height: 100%;
-background: linear-gradient(90deg, var(–copper), var(–gold2));
+background: linear-gradient(90deg, var(–gold) 0%, var(–gold2) 100%);
 border-radius: 999px;
 transition: width 1s ease;
-box-shadow: 0 0 10px rgba(212,170,85,0.5);
+box-shadow: 0 0 8px rgba(212,168,74,0.5);
 }
 
 /* ── Next prayer ── */
 .next-card {
-margin: 0 16px 14px;
+margin: 0 16px 12px;
 border-radius: 18px;
 padding: 20px 24px;
 display: flex; justify-content: space-between; align-items: center;
-background: linear-gradient(135deg, rgba(212,170,85,0.16), rgba(212,170,85,0.06));
-border: 1px solid rgba(212,170,85,0.35);
+background: linear-gradient(135deg, rgba(212,168,74,0.14), rgba(212,168,74,0.05));
+border: 1px solid rgba(212,168,74,0.3);
 position: relative; overflow: hidden;
 animation: riseUp 0.9s 0.18s cubic-bezier(0.16,1,0.3,1) both;
 }
 .next-card::before {
 content: ‘’;
-position: absolute; top: -50px; right: -50px;
-width: 130px; height: 130px; border-radius: 50%;
-background: radial-gradient(circle, rgba(212,170,85,0.12) 0%, transparent 70%);
+position: absolute; top: -40px; right: -40px;
+width: 120px; height: 120px; border-radius: 50%;
+background: radial-gradient(circle, rgba(212,168,74,0.1) 0%, transparent 70%);
 }
 
 .next-tag {
-font-size: 0.62rem;
-letter-spacing: 0.32em;
+font-size: 0.6rem;
+letter-spacing: 0.3em;
 text-transform: uppercase;
-color: var(–gold2);          /* bright gold label */
+color: var(–gray2);           /* muted label */
 margin-bottom: 6px;
-font-weight: 500;
+font-weight: 400;
 }
 
 .next-prayer-name {
-font-family: ‘Cormorant Garamond’, serif;
-font-size: 1.65rem;
+font-size: 1.6rem;
 font-weight: 600;
-color: var(–text);           /* white */
+color: var(–white);           /* WHITE — clear */
 line-height: 1;
+letter-spacing: -0.02em;
 }
 
 .countdown {
 font-family: ‘Cormorant Garamond’, serif;
-font-size: 2rem;
+font-size: 2.1rem;
 font-weight: 400;
-color: var(–gold3);          /* lightest gold = high contrast */
+color: var(–gold2);           /* GOLD accent */
 letter-spacing: 0.02em;
 text-align: right;
 line-height: 1;
 }
 .countdown-sub {
-font-size: 0.6rem;
-color: var(–text2);
+font-size: 0.58rem;
+color: var(–gray2);
 letter-spacing: 0.2em;
 text-transform: uppercase;
 text-align: right;
@@ -209,30 +214,30 @@ margin-top: 4px;
 
 /* ── Sun strip ── */
 .sun-strip {
-margin: 0 16px 14px;
+margin: 0 16px 12px;
 background: var(–card);
 border: 1px solid var(–border);
 border-radius: 16px;
-padding: 16px 20px;
+padding: 15px 20px;
 display: flex; justify-content: space-around; align-items: center;
-animation: riseUp 0.9s 0.24s cubic-bezier(0.16,1,0.3,1) both;
+animation: riseUp 0.9s 0.23s cubic-bezier(0.16,1,0.3,1) both;
 }
 .sun-item { text-align: center; }
 .sun-icon  { font-size: 1.3rem; display: block; margin-bottom: 5px; }
 .sun-label {
-font-size: 0.6rem;
-letter-spacing: 0.2em;
+font-size: 0.58rem;
+letter-spacing: 0.18em;
 text-transform: uppercase;
-color: var(–text2);          /* readable */
+color: var(–gray2);
 margin-bottom: 3px;
 }
 .sun-time {
 font-family: ‘Cormorant Garamond’, serif;
 font-size: 1.2rem;
-color: var(–gold2);          /* bright */
+color: var(–white);           /* WHITE */
 font-weight: 400;
 }
-.sun-div { width: 1px; height: 42px; background: rgba(212,170,85,0.15); }
+.sun-div { width: 1px; height: 40px; background: var(–border); }
 
 /* ── Prayer cards ── */
 .prayers-section {
@@ -242,7 +247,7 @@ display: flex; flex-direction: column; gap: 8px;
 
 .prayer-card {
 background: var(–card);
-border: 1px solid rgba(255,255,255,0.06);
+border: 1px solid var(–border);
 border-radius: 16px;
 padding: 15px 20px;
 display: flex; justify-content: space-between; align-items: center;
@@ -252,55 +257,54 @@ position: relative; overflow: hidden;
 animation: riseUp 0.7s cubic-bezier(0.16,1,0.3,1) both;
 }
 
-/* gold left accent bar */
 .prayer-card::after {
 content: ‘’; position: absolute;
 left: 0; top: 0; bottom: 0; width: 3px;
 background: transparent;
 transition: background 0.3s;
 }
+
 .prayer-card:hover {
-border-color: rgba(212,170,85,0.25);
+border-color: rgba(255,255,255,0.14);
 background: var(–card2);
 transform: translateX(5px);
 }
-.prayer-card:hover::after { background: rgba(212,170,85,0.5); }
+.prayer-card:hover::after { background: rgba(255,255,255,0.2); }
 
 .prayer-card.active {
-background: linear-gradient(135deg, rgba(212,170,85,0.15), rgba(212,170,85,0.05));
-border-color: rgba(212,170,85,0.45);
-box-shadow: 0 4px 28px rgba(212,170,85,0.1), inset 0 1px 0 rgba(212,170,85,0.12);
+background: linear-gradient(135deg, rgba(212,168,74,0.13), rgba(212,168,74,0.04));
+border-color: var(–border-active);
+box-shadow: 0 4px 24px rgba(212,168,74,0.08);
 }
 .prayer-card.active::after { background: var(–gold2); }
 
-.prayer-card.passed {
-opacity: 0.42;
-}
+.prayer-card.passed { opacity: 0.38; }
 
 .p-left { display: flex; align-items: center; gap: 14px; }
 
 .p-dot {
 width: 40px; height: 40px; border-radius: 12px;
-background: rgba(212,170,85,0.08);
-border: 1px solid rgba(212,170,85,0.15);
+background: rgba(255,255,255,0.05);
+border: 1px solid rgba(255,255,255,0.08);
 display: flex; align-items: center; justify-content: center;
 font-size: 1.1rem; transition: all 0.3s;
 }
 .prayer-card.active .p-dot {
-background: rgba(212,170,85,0.22);
-border-color: rgba(212,170,85,0.45);
-box-shadow: 0 0 14px rgba(212,170,85,0.2);
+background: rgba(212,168,74,0.18);
+border-color: rgba(212,168,74,0.4);
+box-shadow: 0 0 12px rgba(212,168,74,0.2);
 }
 
 .p-name-ru {
 font-size: 0.95rem;
 font-weight: 500;
-color: var(–text);           /* full white */
+color: var(–white);           /* WHITE */
+letter-spacing: -0.01em;
 }
 .p-name-ar {
 font-family: ‘Scheherazade New’, serif;
-font-size: 1rem;
-color: var(–text2);          /* readable */
+font-size: 0.95rem;
+color: var(–gray2);           /* muted arabic */
 margin-top: 1px;
 }
 
@@ -308,23 +312,22 @@ margin-top: 1px;
 font-family: ‘Cormorant Garamond’, serif;
 font-size: 1.5rem;
 font-weight: 400;
-color: var(–gold2);          /* bright gold */
-letter-spacing: 0.02em;
+color: var(–gray1);           /* light gray — NOT gold, to save gold for active */
+letter-spacing: 0.01em;
 }
 .prayer-card.active .p-time {
-color: var(–gold3);
+color: var(–gold2);           /* GOLD only when active */
 font-weight: 600;
 }
 
 /* ── Loading / Error ── */
 .loading {
-text-align: center; padding: 64px 24px;
-color: var(–text2);
+text-align: center; padding: 64px 24px; color: var(–gray2);
 }
 .spinner {
 width: 36px; height: 36px;
-border: 1.5px solid rgba(212,170,85,0.2);
-border-top-color: var(–gold2);
+border: 1.5px solid rgba(255,255,255,0.08);
+border-top-color: var(–white);
 border-radius: 50%;
 animation: spin 0.9s linear infinite;
 margin: 0 auto 16px;
@@ -337,8 +340,7 @@ color: #e07070; font-size: 0.9rem; line-height: 1.7;
 /* ── Footer ── */
 .footer {
 text-align: center; margin-top: 36px; padding: 0 24px;
-font-size: 0.62rem;
-color: var(–muted);
+font-size: 0.6rem; color: var(–gray3);
 letter-spacing: 0.16em; text-transform: uppercase;
 animation: riseUp 0.9s 0.65s cubic-bezier(0.16,1,0.3,1) both;
 }
@@ -352,7 +354,6 @@ to   { opacity: 1; transform: translateY(0); }
 
 </head>
 <body>
-
 <div class="page">
   <div class="header">
     <span class="crescent">☽</span>
@@ -419,7 +420,7 @@ to   { opacity: 1; transform: translateY(0); }
     </div>
   </div>
 
-  <div class="footer">AlAdhan API &nbsp;·&nbsp; Muslim World League &nbsp;·&nbsp; Баку</div>
+  <div class="footer">AlAdhan API · Muslim World League · Баку</div>
 </div>
 
 <script>
@@ -456,15 +457,12 @@ function updateActive(now){
   const ns=now.getHours()*3600+now.getMinutes()*60+now.getSeconds();
   const cards=document.querySelectorAll('.prayer-card');
   let nxt=-1, minD=Infinity;
-
   PRAYERS.forEach((p,i)=>{
-    const ts=parseMins(timings[p.key])*60;
-    const d=ts-ns;
+    const ts=parseMins(timings[p.key])*60, d=ts-ns;
     cards[i].classList.remove('active','passed');
     if(d<0) cards[i].classList.add('passed');
     if(d>0&&d<minD){minD=d;nxt=i;}
   });
-
   const nc=document.getElementById('next-card');
   if(nxt>=0){
     cards[nxt].classList.remove('passed');
@@ -473,10 +471,9 @@ function updateActive(now){
     document.getElementById('next-name').textContent=PRAYERS[nxt].ru;
     document.getElementById('next-countdown').textContent=hms(minD);
   } else {
-    const fajrS=parseMins(timings['Fajr'])*60;
     nc.style.display='flex';
     document.getElementById('next-name').textContent='Фаджр (завтра)';
-    document.getElementById('next-countdown').textContent=hms((86400-ns)+fajrS);
+    document.getElementById('next-countdown').textContent=hms((86400-ns)+parseMins(timings['Fajr'])*60);
     PRAYERS.forEach((_,i)=>cards[i].classList.add('passed'));
   }
 }
@@ -489,41 +486,26 @@ async function load(){
     if(j.code!==200) throw 0;
     timings=j.data.timings;
     const d=j.data.date;
-
     document.getElementById('date-greg').textContent=`${DAYS[t.getDay()]}, ${t.getDate()} ${MONTHS[t.getMonth()]} ${t.getFullYear()}`;
     document.getElementById('date-hijri').textContent=`${d.hijri.day} ${HIJRI_MONTHS[+d.hijri.month.number-1]} ${d.hijri.year} г.х.`;
-
     document.getElementById('sun-rise').textContent=strip(timings['Sunrise']);
     document.getElementById('sun-set').textContent=strip(timings['Sunset']);
     document.getElementById('sun-mid').textContent=strip(timings['Midnight']);
     document.getElementById('sun-strip').style.display='flex';
-
     const cont=document.getElementById('prayers-container');
     cont.innerHTML='<div class="prayers-section" id="pl"></div>';
     const list=document.getElementById('pl');
-
     PRAYERS.forEach((p,i)=>{
       const c=document.createElement('div');
       c.className='prayer-card';
       c.style.animationDelay=`${0.28+i*0.08}s`;
-      c.innerHTML=`
-        <div class="p-left">
-          <div class="p-dot">${p.icon}</div>
-          <div>
-            <div class="p-name-ru">${p.ru}</div>
-            <div class="p-name-ar">${p.ar}</div>
-          </div>
-        </div>
-        <div class="p-time">${strip(timings[p.key])}</div>
-      `;
+      c.innerHTML=`<div class="p-left"><div class="p-dot">${p.icon}</div><div><div class="p-name-ru">${p.ru}</div><div class="p-name-ar">${p.ar}</div></div></div><div class="p-time">${strip(timings[p.key])}</div>`;
       list.appendChild(c);
     });
-
     document.getElementById('next-card').style.display='flex';
     updateActive(new Date());
   } catch{
-    document.getElementById('prayers-container').innerHTML=
-      '<div class="error-msg">⚠️ Не удалось загрузить данные.<br>Проверь подключение к интернету.</div>';
+    document.getElementById('prayers-container').innerHTML='<div class="error-msg">⚠️ Не удалось загрузить данные.<br>Проверь подключение к интернету.</div>';
   }
 }
 
