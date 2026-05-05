@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Намаз — Баку</title>
+<link rel="stylesheet" href="css/base.css"/>
+<style>
+/* ── Header ── */
+.header {
+  padding: 24px 24px 20px;
+  text-align: center;
+  animation: riseUp 0.9s cubic-bezier(0.16,1,0.3,1) both;
+}
+.crescent {
+  font-size: 1.6rem; display: block; margin-bottom: 8px;
+  animation: glow 3s ease-in-out infinite alternate;
+}
+.arabic-title {
+  font-family: 'Scheherazade New', serif;
+  font-size: 2.6rem; color: var(--text); line-height: 1; margin-bottom: 8px;
+}
+.city-label {
+  font-size: 0.68rem; letter-spacing: 0.4em;
+  text-transform: uppercase; color: var(--muted); font-weight: 300;
+}
+
+/* ── Clock card ── */
+.clock-card {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.date-greg { font-size: 0.92rem; color: var(--text); font-weight: 500; }
+.date-hijri {
+  font-size: 0.74rem; color: var(--muted);
+  font-family: 'Cormorant Garamond', serif; font-style: italic; margin-top: 3px;
+}
+.live-clock {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem; font-weight: 400; color: var(--gold2);
+  letter-spacing: 0.02em; line-height: 1; white-space: nowrap;
+}
+.live-clock .secs { font-size: 1.1rem; color: var(--gold); opacity: 0.8; }
+
+/* ── Progress ── */
+.progress-wrap { margin: 0 16px 12px; }
+.progress-label {
+  display: flex; justify-content: space-between;
+  font-size: 0.62rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 7px;
+}
+.progress-track {
+  height: 3px; background: var(--border);
+  border-radius: 999px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold2));
+  border-radius: 999px; transition: width 1s ease;
+  box-shadow: 0 0 8px rgba(212,168,74,0.4);
+}
+
+/* ── Next prayer ── */
+.next-card {
+  display: flex; justify-content: space-between; align-items: center;
+  position: relative; overflow: hidden;
+}
+.next-card::before {
+  content: ''; position: absolute; top: -40px; right: -40px;
+  width: 120px; height: 120px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,168,74,0.12) 0%, transparent 70%);
+}
+.next-tag { font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.next-name { font-size: 1.6rem; font-weight: 600; color: var(--text); line-height: 1; }
+.countdown { font-family: 'Cormorant Garamond', serif; font-size: 2.1rem; font-weight: 400; color: var(--gold2); letter-spacing: 0.02em; text-align: right; line-height: 1; }
+.countdown-sub { font-size: 0.58rem; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; text-align: right; margin-top: 4px; }
+
+/* ── Sun strip ── */
+.sun-strip {
+  display: flex; justify-content: space-around; align-items: center;
+}
+.sun-item { text-align: center; }
+.sun-icon  { font-size: 1.3rem; display: block; margin-bottom: 5px; }
+.sun-label { font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.sun-time  { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--text); }
+.sun-div   { width: 1px; height: 40px; background: var(--border); }
+
+/* ── Prayer cards ── */
+.prayers-section { margin: 0 16px; display: flex; flex-direction: column; gap: 8px; }
+.prayer-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1); cursor: default;
+  position: relative; overflow: hidden;
+}
+.prayer-card::after {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: transparent; transition: background 0.3s;
+}
+.prayer-card:hover { border-color: var(--border-gold); background: var(--card2); transform: translateX(5px); }
+.prayer-card:hover::after { background: var(--border-gold); }
+.prayer-card.active {
+  background: linear-gradient(135deg, rgba(212,168,74,0.1), rgba(212,168,74,0.03));
+  border-color: var(--border-gold);
+  box-shadow: 0 4px 24px rgba(212,168,74,0.08);
+}
+.prayer-card.active::after { background: var(--gold2); }
+.prayer-card.passed { opacity: 0.38; }
+
+.p-left { display: flex; align-items: center; gap: 14px; }
+.p-dot {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: var(--bg2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; transition: all 0.3s;
+}
+.prayer-card.active .p-dot {
+  background: rgba(212,168,74,0.15); border-color: var(--border-gold);
+}
+.p-name-ru { font-size: 0.95rem; font-weight: 500; color: var(--text); }
+.p-name-ar { font-family: 'Scheherazade New', serif; font-size: 0.95rem; color: var(--muted); margin-top: 1px; }
+.p-time {
+  font-family: 'Cormorant Garamond', serif; font-size: 1.5rem;
+  font-weight: 400; color: var(--text2); letter-spacing: 0.01em;
+}
+.prayer-card.active .p-time { color: var(--gold2); font-weight: 600; }
+
+.footer {
+  text-align: center; margin-top: 32px;
+  font-size: 0.6rem; color: var(--muted);
+  letter-spacing: 0.14em; text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <span class="crescent">☽</span>
+    <div class="arabic-title">أوقات الصلاة</div>
+    <div class="city-label">Баку &nbsp;·&nbsp; Азербайджан</div>
+  </div>
+
+  <div class="card clock-card anim anim-1">
+    <div>
+      <div class="date-greg" id="date-greg">—</div>
+      <div class="date-hijri" id="date-hijri">—</div>
+    </div>
+    <div class="live-clock">
+      <span id="clock-hm">--:--</span><span class="secs" id="clock-s">:--</span>
+    </div>
+  </div>
+
+  <div class="progress-wrap anim anim-2">
+    <div class="progress-label">
+      <span>Полночь</span><span id="pct">0%</span><span>Полночь</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="pfill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="card card-gold next-card anim anim-2" id="next-card" style="display:none">
+    <div>
+      <div class="next-tag">Следующий намаз</div>
+      <div class="next-name" id="next-name">—</div>
+    </div>
+    <div>
+      <div class="countdown" id="countdown">--:--:--</div>
+      <div class="countdown-sub">осталось</div>
+    </div>
+  </div>
+
+  <div class="card sun-strip anim anim-3" id="sun-strip" style="display:none">
+    <div class="sun-item">
+      <span class="sun-icon">🌅</span>
+      <div class="sun-label">Восход</div>
+      <div class="sun-time" id="sun-rise">—</div>
+    </div>
+    <div class="sun-div"></div>
+    <div class="sun-item">
+      <span class="sun-icon">🌇</span>
+      <div class="sun-label">Закат</div>
+      <div class="sun-time" id="sun-set">—</div>
+    </div>
+    <div class="sun-div"></div>
+    <div class="sun-item">
+      <span class="sun-icon">🌑</span>
+      <div class="sun-label">Ислам. полночь</div>
+      <div class="sun-time" id="sun-mid">—</div>
+    </div>
+  </div>
+
+  <div id="prayers-container">
+    <div class="loading-wrap"><div class="spinner"></div><div>Загрузка...</div></div>
+  </div>
+
+  <div class="footer anim anim-5">AlAdhan API · Muslim World League · Баку</div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+Theme.init();
+renderNavbar();
+
+const PRAYERS = [
+  { key:'Fajr',    ru:'Фаджр',  ar:'الفجر',  icon:'🌙' },
+  { key:'Dhuhr',   ru:'Зухр',   ar:'الظهر',  icon:'☀️' },
+  { key:'Asr',     ru:'Аср',    ar:'العصر',  icon:'🌤️' },
+  { key:'Maghrib', ru:'Магриб', ar:'المغرب', icon:'🌆' },
+  { key:'Isha',    ru:'Иша',    ar:'العشاء', icon:'✨' },
+];
+const HM = ['Мухаррам','Сафар','Рабиуль-авваль','Рабиуль-ахир','Джумадаль-уля','Джумадаль-ахира','Раджаб','Шаабан','Рамадан','Шавваль','Зуль-Каада','Зуль-Хиджжа'];
+const DAYS=['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+const MON=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+
+let timings=null;
+const strip=s=>(s||'--:--').split(' ')[0].substring(0,5);
+const parseMins=s=>{const[h,m]=strip(s).split(':').map(Number);return h*60+m;};
+const hms=s=>`${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor(s%3600/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+
+function tick(){
+  const n=new Date(),h=n.getHours(),m=n.getMinutes(),s=n.getSeconds();
+  document.getElementById('clock-hm').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  document.getElementById('clock-s').textContent=`:${String(s).padStart(2,'0')}`;
+  const pct=((h*3600+m*60+s)/864).toFixed(1);
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('pct').textContent=pct+'%';
+  if(timings) updateActive(n);
+}
+
+function updateActive(now){
+  const ns=now.getHours()*3600+now.getMinutes()*60+now.getSeconds();
+  const cards=document.querySelectorAll('.prayer-card');
+  let nxt=-1,minD=Infinity;
+  PRAYERS.forEach((p,i)=>{
+    const d=parseMins(timings[p.key])*60-ns;
+    cards[i].classList.remove('active','passed');
+    if(d<0)cards[i].classList.add('passed');
+    if(d>0&&d<minD){minD=d;nxt=i;}
+  });
+  const nc=document.getElementById('next-card');
+  if(nxt>=0){
+    cards[nxt].classList.remove('passed');cards[nxt].classList.add('active');
+    nc.style.display='flex';
+    document.getElementById('next-name').textContent=PRAYERS[nxt].ru;
+    document.getElementById('countdown').textContent=hms(minD);
+  } else {
+    nc.style.display='flex';
+    document.getElementById('next-name').textContent='Фаджр (завтра)';
+    document.getElementById('countdown').textContent=hms((86400-ns)+parseMins(timings['Fajr'])*60);
+    PRAYERS.forEach((_,i)=>cards[i].classList.add('passed'));
+  }
+}
+
+async function load(){
+  const t=new Date();
+  try{
+    const j=await(await fetch(`https://api.aladhan.com/v1/timingsByCity?city=Baku&country=AZ&method=3&date=${t.getDate()}-${t.getMonth()+1}-${t.getFullYear()}`)).json();
+    if(j.code!==200)throw 0;
+    timings=j.data.timings;
+    const d=j.data.date;
+    document.getElementById('date-greg').textContent=`${DAYS[t.getDay()]}, ${t.getDate()} ${MON[t.getMonth()]} ${t.getFullYear()}`;
+    document.getElementById('date-hijri').textContent=`${d.hijri.day} ${HM[+d.hijri.month.number-1]} ${d.hijri.year} г.х.`;
+    document.getElementById('sun-rise').textContent=strip(timings['Sunrise']);
+    document.getElementById('sun-set').textContent=strip(timings['Sunset']);
+    document.getElementById('sun-mid').textContent=strip(timings['Midnight']);
+    document.getElementById('sun-strip').style.display='flex';
+    const cont=document.getElementById('prayers-container');
+    cont.innerHTML='<div class="prayers-section" id="pl"></div>';
+    PRAYERS.forEach((p,i)=>{
+      const c=document.createElement('div');
+      c.className='prayer-card';c.style.animationDelay=`${0.3+i*0.07}s`;
+      c.innerHTML=`<div class="p-left"><div class="p-dot">${p.icon}</div><div><div class="p-name-ru">${p.ru}</div><div class="p-name-ar">${p.ar}</div></div></div><div class="p-time">${strip(timings[p.key])}</div>`;
+      document.getElementById('pl').appendChild(c);
+    });
+    document.getElementById('next-card').style.display='flex';
+    updateActive(new Date());
+  }catch{
+    document.getElementById('prayers-container').innerHTML='<div class="loading-wrap" style="color:#e07070">⚠️ Не удалось загрузить данные.<br>Проверь интернет.</div>';
+  }
+}
+
+load();tick();setInterval(tick,1000);
+</script>
+</body>
+</html>

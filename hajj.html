@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Хадж</title>
+<link rel="stylesheet" href="css/base.css"/>
+<style>
+.page-header { text-align:center; padding:24px 24px 16px; animation:riseUp 0.8s cubic-bezier(0.16,1,0.3,1) both; }
+.page-title { font-family:'Scheherazade New',serif; font-size:2rem; color:var(--text); margin-bottom:4px; }
+.page-sub { font-size:0.7rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--muted); }
+
+/* Goal setup */
+.goal-card { margin:0 16px 12px; }
+.goal-title { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+.goal-inputs { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.g-group label { font-size:0.78rem; color:var(--text2); display:block; margin-bottom:5px; }
+.g-group input {
+  width:100%; padding:10px 12px;
+  background:var(--bg2); border:1px solid var(--border); border-radius:10px;
+  color:var(--text); font-size:0.95rem; font-family:'Inter',sans-serif; outline:none;
+  transition:border-color 0.2s;
+}
+.g-group input:focus { border-color:var(--border-gold); }
+
+/* Big progress */
+.progress-card {
+  margin:0 16px 12px;
+  background:var(--card); border:1px solid var(--border); border-radius:24px;
+  padding:28px 24px; text-align:center;
+  animation:riseUp 0.8s 0.1s cubic-bezier(0.16,1,0.3,1) both;
+  position:relative; overflow:hidden;
+}
+.progress-card::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(circle at 50% 30%, rgba(212,168,74,0.06) 0%, transparent 65%);
+}
+
+.kaaba-icon { font-size:3rem; display:block; margin-bottom:12px; }
+
+.big-amount {
+  font-family:'Cormorant Garamond',serif;
+  font-size:3rem; font-weight:300; color:var(--gold2); line-height:1;
+}
+.big-goal { font-size:0.85rem; color:var(--muted); margin-top:4px; margin-bottom:20px; }
+
+/* arc progress */
+.arc-wrap { position:relative; width:220px; height:120px; margin:0 auto 16px; overflow:hidden; }
+.arc-svg { position:absolute; top:0; left:0; }
+.arc-bg   { fill:none; stroke:var(--border); stroke-width:10; stroke-linecap:round; }
+.arc-fill { fill:none; stroke:var(--gold2); stroke-width:10; stroke-linecap:round; transition:stroke-dashoffset 0.8s cubic-bezier(0.16,1,0.3,1); }
+.arc-pct {
+  position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+  font-family:'Cormorant Garamond',serif; font-size:2rem; color:var(--text);
+}
+
+.stats-row { display:flex; justify-content:space-around; margin-bottom:16px; }
+.stat-item { text-align:center; }
+.stat-num { font-family:'Cormorant Garamond',serif; font-size:1.5rem; color:var(--text2); }
+.stat-lbl { font-size:0.6rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
+
+/* motivation */
+.dua-box {
+  background:rgba(212,168,74,0.07); border:1px solid var(--border-gold);
+  border-radius:12px; padding:14px; text-align:center;
+}
+.dua-arabic { font-family:'Scheherazade New',serif; font-size:1.3rem; color:var(--gold2); }
+.dua-ru     { font-size:0.78rem; color:var(--muted); margin-top:4px; }
+
+/* Add savings */
+.add-card { margin:0 16px 12px; }
+.add-title { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+
+.quick-btns { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+.quick-btn {
+  padding:8px 14px; border-radius:10px;
+  background:var(--card2); border:1px solid var(--border);
+  color:var(--text2); font-size:0.82rem; cursor:pointer; transition:all 0.2s;
+}
+.quick-btn:hover { border-color:var(--border-gold); color:var(--gold2); }
+
+.add-row { display:flex; gap:8px; }
+.add-row input {
+  flex:1; padding:11px 14px;
+  background:var(--bg2); border:1px solid var(--border); border-radius:12px;
+  color:var(--text); font-size:1rem; font-family:'Inter',sans-serif; outline:none;
+  transition:border-color 0.2s;
+}
+.add-row input:focus { border-color:var(--border-gold); }
+
+/* Notes input */
+.note-input {
+  width:100%; padding:10px 14px; margin-top:8px;
+  background:var(--bg2); border:1px solid var(--border); border-radius:10px;
+  color:var(--text); font-size:0.88rem; font-family:'Inter',sans-serif; outline:none;
+  transition:border-color 0.2s;
+}
+.note-input:focus { border-color:var(--border-gold); }
+
+/* Log */
+.log-wrap { margin:0 16px; }
+.log-title { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+.log-item {
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:12px 16px; margin-bottom:8px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.log-note  { font-size:0.82rem; color:var(--text); font-weight:400; }
+.log-date  { font-size:0.7rem; color:var(--muted); margin-top:2px; }
+.log-amt   { font-family:'Cormorant Garamond',serif; font-size:1.4rem; color:var(--gold2); }
+.log-del   { background:none; border:none; color:var(--muted); cursor:pointer; font-size:1rem; padding:4px; margin-left:6px; }
+.log-del:hover { color:#e07070; }
+
+/* Milestone */
+.milestone {
+  background:linear-gradient(135deg,rgba(212,168,74,0.14),rgba(212,168,74,0.04));
+  border:1px solid var(--border-gold); border-radius:14px;
+  padding:14px 18px; margin:0 16px 12px; text-align:center;
+  animation:riseUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
+}
+.milestone-icon { font-size:1.6rem; margin-bottom:6px; }
+.milestone-txt  { font-size:0.88rem; color:var(--text2); }
+.milestone-txt strong { color:var(--gold2); }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="page-header">
+    <div class="page-title">🕋 Хадж</div>
+    <div class="page-sub">Халяльные накопления</div>
+  </div>
+
+  <!-- Goal setup -->
+  <div class="card goal-card anim">
+    <div class="goal-title">🎯 Настройка цели</div>
+    <div class="goal-inputs">
+      <div class="g-group">
+        <label>Цель (₼)</label>
+        <input type="number" id="goal-input" placeholder="20000" oninput="saveGoal()"/>
+      </div>
+      <div class="g-group">
+        <label>Год хаджа</label>
+        <input type="number" id="year-input" placeholder="2027" oninput="saveGoal()"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- Big progress -->
+  <div class="progress-card anim anim-2" id="progress-card">
+    <span class="kaaba-icon">🕋</span>
+    <div class="big-amount" id="saved-amount">0 ₼</div>
+    <div class="big-goal" id="goal-label">из 0 ₼ цели</div>
+
+    <div class="arc-wrap">
+      <svg class="arc-svg" width="220" height="120" viewBox="0 0 220 120">
+        <!-- half circle: center 110,110 r=95, from 180° to 0° -->
+        <path class="arc-bg"  d="M 15 110 A 95 95 0 0 1 205 110" />
+        <path class="arc-fill" id="arc-fill" d="M 15 110 A 95 95 0 0 1 205 110"
+          stroke-dasharray="298" stroke-dashoffset="298"/>
+      </svg>
+      <div class="arc-pct" id="arc-pct">0%</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-num" id="remaining">0 ₼</div>
+        <div class="stat-lbl">Осталось</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="months-left">—</div>
+        <div class="stat-lbl">Месяцев</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="monthly-need">0 ₼</div>
+        <div class="stat-lbl">В месяц</div>
+      </div>
+    </div>
+
+    <div class="dua-box">
+      <div class="dua-arabic">لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ</div>
+      <div class="dua-ru">Лаббайк Аллахумма лаббайк — Вот я, о Аллах, вот я!</div>
+    </div>
+  </div>
+
+  <!-- Milestone -->
+  <div id="milestone-box"></div>
+
+  <!-- Add savings -->
+  <div class="card add-card anim anim-3">
+    <div class="add-title">➕ Добавить пополнение</div>
+    <div class="quick-btns">
+      <div class="quick-btn" onclick="quickAdd(50)">+50 ₼</div>
+      <div class="quick-btn" onclick="quickAdd(100)">+100 ₼</div>
+      <div class="quick-btn" onclick="quickAdd(200)">+200 ₼</div>
+      <div class="quick-btn" onclick="quickAdd(500)">+500 ₼</div>
+    </div>
+    <div class="add-row">
+      <input type="number" id="amount-in" placeholder="Сумма ₼" step="0.01"/>
+      <button class="btn btn-gold" onclick="addSaving()">Добавить</button>
+    </div>
+    <input class="note-input" type="text" id="note-in" placeholder="Заметка (необязательно)"/>
+  </div>
+
+  <!-- Log -->
+  <div class="log-wrap anim anim-4">
+    <div class="log-title">История пополнений</div>
+    <div id="log-list"></div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+Theme.init();
+renderNavbar();
+
+let cfg  = Store.get('hajj_cfg',  { goal:20000, year: new Date().getFullYear()+1 });
+let logs = Store.get('hajj_log',  []);
+
+// init inputs
+document.getElementById('goal-input').value = cfg.goal;
+document.getElementById('year-input').value  = cfg.year;
+
+function saveGoal() {
+  cfg.goal = parseFloat(document.getElementById('goal-input').value)||0;
+  cfg.year = parseInt(document.getElementById('year-input').value)||new Date().getFullYear()+1;
+  Store.set('hajj_cfg', cfg);
+  render();
+}
+
+function totalSaved() { return logs.reduce((a,b)=>a+b.amount,0); }
+
+function render() {
+  const saved = totalSaved();
+  const goal  = cfg.goal || 1;
+  const pct   = Math.min(saved/goal, 1);
+
+  document.getElementById('saved-amount').textContent = saved.toFixed(0)+' ₼';
+  document.getElementById('goal-label').textContent   = `из ${goal.toFixed(0)} ₼ цели`;
+  document.getElementById('arc-pct').textContent      = Math.round(pct*100)+'%';
+
+  // arc: dasharray = 298 (half circle length)
+  document.getElementById('arc-fill').style.strokeDashoffset = 298*(1-pct);
+
+  const remaining = Math.max(goal-saved,0);
+  document.getElementById('remaining').textContent = remaining.toFixed(0)+' ₼';
+
+  // months left until hajj year
+  const now = new Date();
+  const target = new Date(cfg.year, 4, 1); // approx Dhul-Hijja
+  const monthsLeft = Math.max(Math.ceil((target-now)/(1000*60*60*24*30.4)),1);
+  document.getElementById('months-left').textContent = monthsLeft;
+  document.getElementById('monthly-need').textContent = remaining>0 ? (remaining/monthsLeft).toFixed(0)+' ₼' : '✓';
+
+  renderMilestone(pct);
+  renderLog();
+}
+
+function renderMilestone(pct) {
+  const milestones = [
+    { at:0.1,  icon:'🌱', msg:'Первые 10% — <strong>Машааллах!</strong> Путь начат.' },
+    { at:0.25, icon:'⭐', msg:'Четверть пути! <strong>Бараказналлах</strong> тебе.' },
+    { at:0.5,  icon:'🌙', msg:'Половина цели! <strong>Аллаху Акбар!</strong>' },
+    { at:0.75, icon:'🔥', msg:'75% — финишная прямая! <strong>Ты почти там.</strong>' },
+    { at:1.0,  icon:'🕋', msg:'<strong>Лаббайк!</strong> Цель достигнута. Да примет Аллах твой Хадж!' },
+  ];
+  const mb = document.getElementById('milestone-box');
+  let show = null;
+  for (const m of milestones) { if (pct >= m.at) show=m; }
+  if (show) {
+    mb.innerHTML=`<div class="milestone"><div class="milestone-icon">${show.icon}</div><div class="milestone-txt">${show.msg}</div></div>`;
+  } else mb.innerHTML='';
+}
+
+function addSaving(amt) {
+  const a = amt || parseFloat(document.getElementById('amount-in').value);
+  if (!a||a<=0) return;
+  const note = document.getElementById('note-in')?.value || '';
+  logs.push({ amount:a, note, date:new Date().toISOString() });
+  Store.set('hajj_log', logs);
+  document.getElementById('amount-in').value='';
+  if(document.getElementById('note-in')) document.getElementById('note-in').value='';
+  render();
+}
+
+function quickAdd(n) {
+  document.getElementById('amount-in').value=n;
+  addSaving(n);
+}
+
+function deleteSaving(i) {
+  logs.splice(i,1); Store.set('hajj_log', logs); render();
+}
+
+function renderLog() {
+  const list = document.getElementById('log-list');
+  if (!logs.length) {
+    list.innerHTML='<div style="text-align:center;color:var(--muted);font-size:0.85rem;padding:20px">Добавь первое пополнение 🕋</div>';
+    return;
+  }
+  list.innerHTML = logs.slice().reverse().map((l,ri)=>{
+    const i=logs.length-1-ri;
+    const dt=new Date(l.date);
+    return `<div class="log-item">
+      <div>
+        <div class="log-note">${l.note||'Пополнение'}</div>
+        <div class="log-date">${dt.toLocaleDateString('ru',{day:'numeric',month:'long',year:'numeric'})}</div>
+      </div>
+      <div style="display:flex;align-items:center">
+        <div class="log-amt">+${l.amount.toFixed(0)} ₼</div>
+        <button class="log-del" onclick="deleteSaving(${i})">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+render();
+</script>
+</body>
+</html>
